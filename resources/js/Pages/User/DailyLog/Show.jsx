@@ -76,7 +76,7 @@ export default function Show({ log }) {
     // Gunakan router.post dengan _method: PUT untuk support upload file jika ada, 
     // atau router.put jika hanya text.
     
-    router.post(route('logs.items.update', { log: log.id, item: editingItem.id }), {
+    router.post(route('user.daily-logs.items.update', { log: log.id, item: editingItem.id }), {
         ...updates,
         _method: 'PUT',
     }, {
