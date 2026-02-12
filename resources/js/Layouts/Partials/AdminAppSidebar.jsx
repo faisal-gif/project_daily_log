@@ -1,4 +1,4 @@
-import { LayoutDashboard, List, LogsIcon, Warehouse } from 'lucide-react';
+import { ChartBar, LayoutDashboard, List, LogsIcon, User2, Warehouse } from 'lucide-react';
 
 import { useSidebar } from '@/components/ui/sidebar';
 import {
@@ -22,14 +22,19 @@ const menuItems = [
     url: route('dashboard'),
     icon: LayoutDashboard,
   },
+   {
+    title: 'Kelola Users',
+    url: route('admin.users.index'),
+    icon: User2,
+  },
   {
-    title: 'Log Harian',
-    url: route('user.daily-logs.index'),
-    icon: LogsIcon,
+    title: 'Reports',
+    url: route('admin.reports.index'),
+    icon: ChartBar,
   },
 ];
 
-export function AppSidebar() {
+export function AdminAppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === 'collapsed';
 

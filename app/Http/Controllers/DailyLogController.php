@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DailyLogRequest;
 use App\Models\DailyLog;
+use App\Models\LogItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -69,6 +70,72 @@ class DailyLogController extends Controller
         });
 
 
-        return redirect()->route('daily-logs.index')->with('success', 'Log harian berhasil disimpan.');
+        return redirect()->route('user.daily-logs.index')->with('success', 'Log harian berhasil disimpan.');
+    }
+
+    public function show($id)
+    {
+        $log = DailyLog::with(['items' => function ($query) {
+            $query->orderBy('time', 'asc');
+        }])
+            ->where('user_id', auth()->id()) // Pastikan hanya milik user yg login
+            ->findOrFail($id);
+
+        return Inertia::render('User/DailyLog/Show', [
+            'log' => $log
+        ]);
+    }
+
+    public function update(Request $request, $logId, LogItem $item)
+    {
+        $validated = $request->validate([
+            'time' => 'required',
+            'description' => 'required|string',
+            'notes' => 'nullable|string',
+            'photo' => 'nullable|image|max:5120', // 5MB
+            'remove_photo' => 'boolean'
+        ]);
+
+        // Update data teks standar
+        $item->time = $validated['time'];
+        $item->description = $validated['description'];
+        $item->notes = $validated['notes'];
+
+        // Cek jika user minta hapus foto lama
+        if ($request->boolean('remove_photo')) {
+            // Hapus file fisik jika ada (opsional, gunakan Storage::delete)
+            if ($item->photo_path) {
+                Storage::disk('public')->delete($item->photo_path);
+            }
+            $item->photo_path = null;
+            $item->photo_name = null;
+        }
+
+        // Cek jika ada upload foto BARU
+        if ($request->hasFile('photo')) {
+            // Hapus foto lama dulu biar bersih
+            if ($item->photo_path) {
+                Storage::disk('public')->delete($item->photo_path);
+            }
+
+            $file = $request->file('photo');
+            $path = $file->store('logs', 'public');
+
+            $item->photo_path = $path;
+            $item->photo_name = $file->getClientOriginalName();
+        }
+
+        $item->save();
+
+        return back()->with('message', 'Aktivitas berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        $log = DailyLog::where('user_id', auth()->id())->findOrFail($id);
+
+        $log->delete(); 
+
+        return redirect()->route('user.daily-logs.index')->with('message', 'Log berhasil dihapus.');
     }
 }

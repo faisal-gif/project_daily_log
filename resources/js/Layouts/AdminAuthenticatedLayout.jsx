@@ -1,5 +1,5 @@
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
-import { AppSidebar } from "./Partials/AppSidebar";
+import { AdminAppSidebar } from "./Partials/AdminAppSidebar";
 import { Link, usePage } from "@inertiajs/react";
 import {
   DropdownMenu,
@@ -13,20 +13,18 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, User } from "lucide-react";
 
-
-export default function AuthenticatedLayout({ children }) {
-  const { auth } = usePage().props;
+export default function AdminAuthenticatedLayout({ children }) {
+  const { auth } = usePage().props; // Mengambil data user yang sedang login
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <AppSidebar />
-
-
+        <AdminAppSidebar />
 
         <SidebarInset>
           <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
             <SidebarTrigger className="-ml-1" />
+            
             <div className="flex-1" />
 
             {/* User Profile & Logout Dropdown */}
@@ -51,10 +49,10 @@ export default function AuthenticatedLayout({ children }) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="text-destructive focus:text-destructive">
                   {/* PENTING: Logout di Laravel/Inertia WAJIB menggunakan method POST */}
-                  <Link
-                    href={route('logout')}
-                    method="post"
-                    as="button"
+                  <Link 
+                    href={route('logout')} 
+                    method="post" 
+                    as="button" 
                     className="w-full flex items-center cursor-pointer"
                   >
                     <LogOut className="mr-2 h-4 w-4" />

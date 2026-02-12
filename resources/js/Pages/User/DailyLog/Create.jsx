@@ -73,7 +73,7 @@ export default function Create() {
         const validItems = data.items.filter((i) => i.description.trim());
         if (validItems.length === 0) return;
 
-        post(route("daily-logs.store"), {
+        post(route("user.daily-logs.store"), {
             forceFormData: true,
             onSuccess: () => reset(),
         });
